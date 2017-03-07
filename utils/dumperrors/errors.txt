@@ -1,0 +1,42 @@
+Error Group,Error Code, Error DescriptionGeneric Errors, 1, There was a problem with the parameters in your JSON request. Please correct the request.
+Generic Errors, 2, The specified dividend id is invalid.
+Generic Errors, 3, The specified blockchain is not supported.
+Generic Errors, 4, Request headers were not set correctly ensure the following headers are set: accessKey and signature.
+Generic Errors, 5, Attempt to access API with unknown user key
+Generic Errors, 6, Could not verify HMAC signature
+Generic Errors, 7, Invalid nonce
+Generic Errors, 8, Not found
+Generic Errors, 9, The function is not available on the selected blockchain.
+Generic Errors, 10, The passphrase provided is not valid.
+Generic Errors, 11, The specified asset id is invalid.
+Generic Errors, 12, The specified paymentId is invalid. Please correct the paymentId and resubmit.
+Generic Errors, 14, The specified address is invalid. Please correct the address and resubmit.
+Generic Errors, 15, The specified asset is invalid. Please correct the asset and resubmit.
+Generic Errors, 16, The specified API is valid. However it has been disabled by an administrator.
+Generic Errors, 13, Misc error. Please contact Vennd.io support.
+Counterparty Errors, 1000, Misc error when contacting Counterparty. Please contact Vennd.io support.
+Counterparty Errors, 1001, Timeout when contacting Counterparty. Please try again later.
+Counterparty Errors, 1002, Counterparty Blockchain temporarily unavailable. Please try again later.
+Counterparty Errors, 1003, Unable to sign transaction. Is your passphrase correct?
+Counterparty Errors, 1004, Unable to broadcast transaction to the blockchain. Please try the transaction again.
+Counterparty Errors, 1009, Insufficient asset in this address.
+Counterparty Errors, 1005, Insufficient BTC in address to perform transaction. Please use the Activate() call to add more BTC.
+Counterparty Errors, 1007, The dividend could not be found.
+Counterparty Errors, 1008, Unable to create the blockchain transaction.
+Counterparty Errors, 1010, One of the addresses provided was not correct. Please check the addresses involved in the transaction.
+Counterparty Errors, 1011, Only the issuer may pay dividends.
+Counterparty Errors, 1012, The asset specified is incorrect or doesn't exist.
+Ripple Errors, 2000, Misc error when contacting Ripple. Please contact Vennd.io support.
+Ripple Errors, 2001, Timeout when contacting Ripple. Please try again later.
+Ripple Errors, 2002, The amount specified is not a valid amount.
+Ripple Errors, 2003, The currency is invalid. Ripple currencies must be 3 characters or longer.
+Ripple Errors, 2004, The Ripple node rejected the transaction submission. Please try again.
+Ripple Errors, 2005, If the currency is not XRP the issuer must be provided.
+Ripple Errors, 2006, Unable to sign transaction. Is your passphrase correct?
+Ripple Errors, 2007, The transaction was submitted to the Ripple network but was invalid.
+Ripple Errors, 2008, The specified asset is invalid or you must activate the destination wallet to accept the asset.
+Ripple Errors, 2009, The specified source address is invalid.
+Ripple Errors, 2010, The specified destination address is invalid.
+Ripple Errors, 2011, If a distribution address is specified the passphrase for the distribution address must be given.
+Ripple Errors, 2012, The specified distribution address does not contain sufficient funds. Please activate the address and try again.
+Ripple Errors, 2013, There was insufficient XRP in the address to perform the payment. Please activate the address and try again.

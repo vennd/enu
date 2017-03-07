@@ -1,0 +1,237 @@
+{
+	"comment": "",
+	"ignore": "",
+	"package": [
+		{
+			"canonical": "github.com/btcsuite/btcd/btcec",
+			"comment": "",
+			"local": "github.com/btcsuite/btcd/btcec",
+			"revision": "09ce6f94d3610015d089e3836119d7c8b19da735",
+			"revisionTime": "2015-06-18T11:49:45-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/btcd/btcjson",
+			"comment": "",
+			"local": "github.com/btcsuite/btcd/btcjson",
+			"revision": "09ce6f94d3610015d089e3836119d7c8b19da735",
+			"revisionTime": "2015-06-18T11:49:45-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/btcd/chaincfg",
+			"comment": "",
+			"local": "github.com/btcsuite/btcd/chaincfg",
+			"revision": "09ce6f94d3610015d089e3836119d7c8b19da735",
+			"revisionTime": "2015-06-18T11:49:45-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/btcd/txscript",
+			"comment": "",
+			"local": "github.com/btcsuite/btcd/txscript",
+			"revision": "09ce6f94d3610015d089e3836119d7c8b19da735",
+			"revisionTime": "2015-06-18T11:49:45-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/btcd/wire",
+			"comment": "",
+			"local": "github.com/btcsuite/btcd/wire",
+			"revision": "09ce6f94d3610015d089e3836119d7c8b19da735",
+			"revisionTime": "2015-06-18T11:49:45-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/btclog",
+			"comment": "",
+			"local": "github.com/btcsuite/btclog",
+			"revision": "5005b7240f310ae8f01c7664a3954d280241eb2b",
+			"revisionTime": "2015-05-01T12:15:08-05:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/btcrpcclient",
+			"comment": "",
+			"local": "github.com/btcsuite/btcrpcclient",
+			"revision": "7cb04ae6db6d10d1716b575485b4802423746c9f",
+			"revisionTime": "2015-06-18T16:21:03-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/btcutil",
+			"comment": "",
+			"local": "github.com/btcsuite/btcutil",
+			"revision": "9ffb1ecd80cfeccecdb4f0c82855c5abdd60e1a2",
+			"revisionTime": "2015-06-11T16:08:04-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/btcutil/base58",
+			"comment": "",
+			"local": "github.com/btcsuite/btcutil/base58",
+			"revision": "9ffb1ecd80cfeccecdb4f0c82855c5abdd60e1a2",
+			"revisionTime": "2015-06-11T16:08:04-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/btcutil/hdkeychain",
+			"comment": "",
+			"local": "github.com/btcsuite/btcutil/hdkeychain",
+			"revision": "9ffb1ecd80cfeccecdb4f0c82855c5abdd60e1a2",
+			"revisionTime": "2015-06-11T16:08:04-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/fastsha256",
+			"comment": "",
+			"local": "github.com/btcsuite/fastsha256",
+			"revision": "302ad4db268b46f9ebda3078f6f7397f96047735",
+			"revisionTime": "2015-04-09T12:38:57-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/go-socks/socks",
+			"comment": "",
+			"local": "github.com/btcsuite/go-socks/socks",
+			"revision": "cfe8b59e565c1a5bd4e2005d77cd9aa8b2e14524",
+			"revisionTime": "2015-05-13T13:39:12-04:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/golangcrypto/ripemd160",
+			"comment": "",
+			"local": "github.com/btcsuite/golangcrypto/ripemd160",
+			"revision": "53f62d9b43e87a6c56975cf862af7edf33a8d0df",
+			"revisionTime": "2015-03-03T20:55:08-06:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/seelog",
+			"comment": "",
+			"local": "github.com/btcsuite/seelog",
+			"revision": "313961b101eb55f65ae0f03ddd4e322731763b6c",
+			"revisionTime": "2015-01-15T22:11:18-06:00"
+		},
+		{
+			"canonical": "github.com/btcsuite/websocket",
+			"comment": "",
+			"local": "github.com/btcsuite/websocket",
+			"revision": "31079b6807923eb23992c421b114992b95131b55",
+			"revisionTime": "2015-01-19T11:41:27-06:00"
+		},
+		{
+			"canonical": "github.com/davecgh/go-spew/spew",
+			"comment": "",
+			"local": "github.com/davecgh/go-spew/spew",
+			"revision": "f9f629a1d082960e5d1747f33c2b378612615fea",
+			"revisionTime": "2015-05-25T06:57:43-07:00"
+		},
+		{
+			"canonical": "github.com/davecgh/go-spew/spew/testdata",
+			"comment": "",
+			"local": "github.com/davecgh/go-spew/spew/testdata",
+			"revision": "f9f629a1d082960e5d1747f33c2b378612615fea",
+			"revisionTime": "2015-05-25T06:57:43-07:00"
+		},
+		{
+			"canonical": "github.com/go-sql-driver/mysql",
+			"comment": "",
+			"local": "github.com/go-sql-driver/mysql",
+			"revision": "a197e5d40516f2e9f74dcee085a5f2d4604e94df",
+			"revisionTime": "2015-02-25T17:28:11+08:00"
+		},
+		{
+			"canonical": "github.com/gorilla/context",
+			"comment": "",
+			"local": "github.com/gorilla/context",
+			"revision": "215affda49addc4c8ef7e2534915df2c8c35c6cd",
+			"revisionTime": "2014-12-17T08:02:51-08:00"
+		},
+		{
+			"canonical": "github.com/gorilla/mux",
+			"comment": "",
+			"local": "github.com/gorilla/mux",
+			"revision": "8096f47503459bcc74d1f4c487b7e6e42e5746b5",
+			"revisionTime": "2015-03-10T20:17:35-07:00"
+		},
+		{
+			"canonical": "github.com/gorilla/securecookie",
+			"comment": "",
+			"local": "github.com/gorilla/securecookie",
+			"revision": "8e98dd730fc43f1383f19615db6f2e702c9738e8",
+			"revisionTime": "2015-03-27T08:58:05-07:00"
+		},
+		{
+			"canonical": "github.com/nytlabs/gojsonexplode",
+			"comment": "",
+			"local": "github.com/nytlabs/gojsonexplode",
+			"revision": "8b76b95ceb6cb96cd4797a42a0201dbd618de9c2",
+			"revisionTime": "2014-08-01T17:21:46-04:00"
+		},
+		{
+			"canonical": "bitbucket.org/dchapes/ripple/crypto/doublehash",
+			"comment": "",
+			"local": "github.com/vennd/enu/internal/bitbucket.org/dchapes/ripple/crypto/doublehash",
+			"revision": "75445ae345ba",
+			"revisionTime": "2014-11-05T17:23:09-05:00"
+		},
+		{
+			"canonical": "bitbucket.org/dchapes/ripple/crypto/rkey",
+			"comment": "",
+			"local": "github.com/vennd/enu/internal/bitbucket.org/dchapes/ripple/crypto/rkey",
+			"revision": "75445ae345ba",
+			"revisionTime": "2014-11-05T17:23:09-05:00"
+		},
+		{
+			"canonical": "bitbucket.org/dchapes/ripple/crypto/sha512half",
+			"comment": "",
+			"local": "github.com/vennd/enu/internal/bitbucket.org/dchapes/ripple/crypto/sha512half",
+			"revision": "75445ae345ba",
+			"revisionTime": "2014-11-05T17:23:09-05:00"
+		},
+		{
+			"canonical": "github.com/sour-is/koblitz/kelliptic",
+			"comment": "",
+			"local": "github.com/vennd/enu/internal/github.com/sour-is/koblitz/kelliptic",
+			"revision": "28d92784add22c8d728383886bbe18f0bd37737a",
+			"revisionTime": "2014-05-08T09:56:19-06:00"
+		},
+		{
+			"canonical": "github.com/spearson78/guardian/encoding/base58",
+			"comment": "",
+			"local": "github.com/vennd/enu/internal/github.com/spearson78/guardian/encoding/base58",
+			"revision": "2f9b7f8a1a06d92c7d534389eddec7c953cf81c0",
+			"revisionTime": "2013-05-01T11:21:21-07:00"
+		},
+		{
+			"canonical": "github.com/xeipuuv/gojsonpointer",
+			"comment": "",
+			"local": "github.com/vennd/enu/internal/github.com/xeipuuv/gojsonpointer",
+			"revision": "636edb2500d21f2ed09ea96a00deb36bbd07cf70",
+			"revisionTime": "2015-01-02T14:00:19+08:00"
+		},
+		{
+			"canonical": "github.com/xeipuuv/gojsonreference",
+			"comment": "",
+			"local": "github.com/vennd/enu/internal/github.com/xeipuuv/gojsonreference",
+			"revision": "e02fc20de94c78484cd5ffb007f8af96be030a45",
+			"revisionTime": "2015-08-08T14:50:54+08:00"
+		},
+		{
+			"canonical": "golang.org/x/crypto/ripemd160",
+			"comment": "",
+			"local": "github.com/vennd/enu/internal/golang.org/x/crypto/ripemd160",
+			"revision": "346896d57731cb5670b36c6178fc5519f3225980",
+			"revisionTime": "2015-06-18T15:57:31-07:00"
+		},
+		{
+			"canonical": "github.com/vennd/mneumonic",
+			"comment": "",
+			"local": "github.com/vennd/mneumonic",
+			"revision": "3fb443a7505685f5492d7020d760e31a729ce472",
+			"revisionTime": "2015-07-15T21:39:42+09:00"
+		},
+		{
+			"canonical": "github.com/xeipuuv/gojsonschema",
+			"comment": "",
+			"local": "github.com/xeipuuv/gojsonschema",
+			"revision": "987b638051a365f087b9e7120eb92bb1b1df341b",
+			"revisionTime": "2015-07-29T02:28:06+08:00"
+		},
+		{
+			"canonical": "golang.org/x/net/context",
+			"comment": "",
+			"local": "golang.org/x/net/context",
+			"revision": "66f0418ca41253f8d1a024eb9754e9441a8e79b9",
+			"revisionTime": "2015-08-17T12:15:29+09:00"
+		}
+	]
+}
