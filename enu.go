@@ -21,5 +21,5 @@ func main() {
 	router := NewRouter()
 
 	log.Printf("Enu %s API server started on %s", env, hostname)
-	log.Fatal(http.ListenAndServe("localhost:8080", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
