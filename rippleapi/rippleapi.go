@@ -553,7 +553,7 @@ func Sign(c context.Context, tx interface{}, secret string) (string, int64, erro
 			log.FluentfContext(consts.LOGERROR, c, "Error from signing: %s, errorCode: %d", errorMessage, errorCode)
 
 			// Invalid source
-			if errorCode == 55 {
+			if errorCode == 55 || errorCode == 63 {
 				return "", consts.RippleErrors.InvalidSource.Code, errors.New(consts.RippleErrors.InvalidSource.Description)
 			}
 
