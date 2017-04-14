@@ -15,6 +15,7 @@ import (
 
 	"github.com/vennd/enu/internal/github.com/nytlabs/gojsonexplode"
 	"github.com/vennd/enu/internal/golang.org/x/net/context"
+	"strings"
 )
 
 // Globals
@@ -227,7 +228,7 @@ func FluentfContext(errorLevel string, context context.Context, format string, a
 		env = "unknown"
 	}
 
-	if env == "dev" || env == "unknown" {
+	if strings.ToUpper(env)  == "DEV" || env == "unknown" {
 		log.Printf(format, a...)
 	}
 
