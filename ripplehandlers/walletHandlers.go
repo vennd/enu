@@ -318,12 +318,15 @@ func delegatedActivateAddress(c context.Context, addressToActivate string, passp
 	var numLinesRequired = 0
 	//	var retries int = 0
 
-	log.FluentfContext(consts.LOGINFO, c, "Number of trust lines requested: %d", len(assets))
-
 	// Copy same context values to local variables which are often accessed
 	accessKey := c.Value(consts.AccessKeyKey).(string)
 	blockchainId := c.Value(consts.BlockchainIdKey).(string)
 	//	env := c.Value(consts.EnvKey).(string)
+
+	// Write the activation with the generated activation id to the database
+	go database.InsertActivation(c, accessKey, activationId, blockchainId, addressToActivate, 0)
+
+	log.FluentfContext(consts.LOGINFO, c, "Number of trust lines requested: %d", len(assets))
 
 	// Need a better way to secure internal wallets
 	// Array of internal wallets that can be round robined to activate addresses
@@ -343,8 +346,7 @@ func delegatedActivateAddress(c context.Context, addressToActivate string, passp
 		accountInfo, _, err := rippleapi.GetAccountInfo(c, addressToActivate)
 		if err != nil {
 			log.FluentfContext(consts.LOGERROR, c, "Error in rippleapi.GetAccountInfo(): %s", err.Error())
-			database.UpdatePaymentWithErrorByPaymentId(c, accessKey, activationId, consts.RippleErrors.MiscError.Code, consts.RippleErrors.MiscError.Description)
-			return consts.RippleErrors.MiscError.Code, errors.New(consts.RippleErrors.MiscError.Description)
+			return 0, nil
 		}
 
 		if accountInfo.Balance != "" {
@@ -354,8 +356,7 @@ func delegatedActivateAddress(c context.Context, addressToActivate string, passp
 		}
 		if err != nil {
 			log.FluentfContext(consts.LOGERROR, c, "Error in ParseUint(): %s", err.Error())
-			database.UpdatePaymentWithErrorByPaymentId(c, accessKey, activationId, consts.RippleErrors.MiscError.Code, consts.RippleErrors.MiscError.Description)
-			return consts.RippleErrors.MiscError.Code, errors.New(consts.RippleErrors.MiscError.Description)
+			return 0, nil
 		}
 
 		log.FluentfContext(consts.LOGINFO, c, "Wallet currently contains %d XRP", currentBalance)
@@ -364,8 +365,7 @@ func delegatedActivateAddress(c context.Context, addressToActivate string, passp
 		lines, _, err := rippleapi.GetAccountLines(c, addressToActivate)
 		if err != nil {
 			log.FluentfContext(consts.LOGERROR, c, "Error in GetAccountLines(): %s", err.Error())
-			database.UpdatePaymentWithErrorByPaymentId(c, accessKey, activationId, consts.RippleErrors.MiscError.Code, consts.RippleErrors.MiscError.Description)
-			return consts.RippleErrors.MiscError.Code, errors.New(consts.RippleErrors.MiscError.Description)
+			return 0, nil
 		}
 
 		//		 Calculate how much XRP is required as reserve for address to activate right now
@@ -414,10 +414,9 @@ func delegatedActivateAddress(c context.Context, addressToActivate string, passp
 
 		// Pick an internal address to send from
 		var randomNumber int = 0
-		var sourceAddress = wallets[randomNumber].Address
+		// todo - should pick a real random wallet
 
-		// Write the activation with the generated activation id to the database
-		database.InsertActivation(c, accessKey, activationId, blockchainId, sourceAddress, amountXRPToSend)
+		// todo - Update activation with XRP to send
 
 		// Send the xrp - note that XRP must be specified in satoshis so we multiply by 100
 		_, _, err = delegatedSend(c, accessKey, wallets[randomNumber].Passphrase, wallets[randomNumber].Address, addressToActivate, "XRP", "", amountXRPToSend*100, activationId, "")
