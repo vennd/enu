@@ -484,6 +484,8 @@ func GetPaymentByPaymentId(c context.Context, accessKey string, paymentId string
 		if err.Error() == "sql: no rows in result set" {
 			payment.PaymentId = paymentId
 			payment.Status = consts.NotFound
+
+			return payment
 		}
 	} else if err != nil {
 		log.FluentfContext(consts.LOGERROR, c, "Failed to Scan. Reason: %s", err.Error())
@@ -534,6 +536,8 @@ func GetPaymentByPaymentTag(c context.Context, accessKey string, paymentTag stri
 		if err.Error() == "sql: no rows in result set" {
 			payment.PaymentTag = paymentTag
 			payment.Status = consts.NotFound
+
+			return payment
 		}
 	} else {
 		log.FluentfContext(consts.LOGERROR, c, "Failed to Scan. Reason: %s", err.Error())
@@ -610,7 +614,7 @@ func UpdatePaymentStatusByPaymentId(c context.Context, accessKey string, payment
 
 	payment := GetPaymentByPaymentId(c, accessKey, paymentId)
 
-	if payment.PaymentId == "" {
+	if payment.Status == consts.NotFound {
 		errorString := fmt.Sprintf("Payment does not exist or cannot be accessed by %s\n", accessKey)
 
 		return errors.New(errorString)
@@ -637,7 +641,7 @@ func UpdatePaymentWithErrorByPaymentId(c context.Context, accessKey string, paym
 
 	payment := GetPaymentByPaymentId(c, accessKey, paymentId)
 
-	if payment.PaymentId == "" {
+	if payment.Status == consts.NotFound {
 		errorString := fmt.Sprintf("Payment does not exist or cannot be accessed by %s\n", accessKey)
 
 		return errors.New(errorString)
@@ -664,7 +668,7 @@ func UpdatePaymentCompleteByPaymentId(c context.Context, accessKey string, payme
 
 	payment := GetPaymentByPaymentId(c, accessKey, paymentId)
 
-	if payment.PaymentId == "" {
+	if payment.Status == consts.NotFound {
 		errorString := fmt.Sprintf("Payment does not exist or cannot be accessed by %s\n", accessKey)
 
 		return errors.New(errorString)
@@ -691,7 +695,7 @@ func UpdatePaymentSignedRawTxByPaymentId(c context.Context, accessKey string, pa
 
 	payment := GetPaymentByPaymentId(c, accessKey, paymentId)
 
-	if payment.PaymentId == "" {
+	if payment.Status == consts.NotFound {
 		errorString := fmt.Sprintf("Payment does not exist or cannot be accessed by %s\n", accessKey)
 
 		return errors.New(errorString)

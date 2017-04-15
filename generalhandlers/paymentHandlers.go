@@ -35,7 +35,10 @@ func GetPayment(c context.Context, w http.ResponseWriter, r *http.Request, m map
 	log.FluentfContext(consts.LOGINFO, c, "GetPayment called for '%s' by '%s'\n", paymentId, c.Value(consts.AccessKeyKey).(string))
 
 	payment = database.GetPaymentByPaymentId(c, c.Value(consts.AccessKeyKey).(string), paymentId)
-	// errorhandling here!!
+	if payment.Status == consts.NotFound {
+		log.FluentfContext(consts.LOGINFO, c, "Payment %s not found", paymentId)
+		handlers.ReturnNotFound(c, w)
+	}
 
 	// Add the blockchain status
 	if payment.BroadcastTxId != "" && payment.BlockchainId == consts.CounterpartyBlockchainId {
