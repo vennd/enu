@@ -292,9 +292,16 @@ type AccountInfo struct {
 	Index           string `json:"index,omitempty"`
 }
 
+// Used to store the internal wallets
+type MasterWallet struct {
+	Address    string `json:"address"`
+	Passphrase string `json:"passphrase"`
+}
+
 // Initialises global variables and database connection for all handlers
 var isInit bool = false // set to true only after the init sequence is complete
 var rippleHost string
+var RippleWallets []MasterWallet
 
 func Init() {
 	var configFilePath string
@@ -353,6 +360,16 @@ func InitWithConfigPath(configFilePath string) {
 
 	// Ripple API parameters
 	rippleHost = m["rippleHost"].(string) // End point for JSON RPC server
+
+	for _, w := range m["rippleWallets"].([]interface{}) {
+		var wallet MasterWallet
+		var wmap = w.(map[string]interface{})
+
+		wallet.Address = wmap["address"].(string)
+		wallet.Passphrase = wmap["passphrase"].(string)
+
+		RippleWallets = append(RippleWallets, wallet)
+	}
 
 	isInit = true
 }

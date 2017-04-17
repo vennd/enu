@@ -20,6 +20,7 @@ import (
 	"github.com/vennd/enu/log"
 	"github.com/vennd/enu/rippleapi"
 	"github.com/vennd/enu/ripplecrypto"
+	"math/rand"
 )
 
 var ripple_BackEndPollRate = 1000
@@ -328,16 +329,6 @@ func delegatedActivateAddress(c context.Context, addressToActivate string, passp
 
 	log.FluentfContext(consts.LOGINFO, c, "Number of trust lines requested: %d", len(assets))
 
-	// Need a better way to secure internal wallets
-	// Array of internal wallets that can be round robined to activate addresses
-	var wallets = []struct {
-		Address      string
-		Passphrase   string
-		BlockchainId string
-	}{
-		{"rpu8gxvRzQ2JLQMN7Goxs6x9zffH3sjQBd", "one two three four five six seven eight nine ten eleven twelve", "ripple"},
-	}
-
 	var currentBalance uint64 // The current amount of ripples in the account
 	var targetReserve uint64  // The amount we need to reach in this account to fulful the reserve and trustlines we want to create
 
@@ -412,14 +403,15 @@ func delegatedActivateAddress(c context.Context, addressToActivate string, passp
 		log.FluentfContext(consts.LOGINFO, c, "XRP for %d transactions txXRPAmount: %d", amount, txXRPAmount)
 		log.FluentfContext(consts.LOGINFO, c, "XRP that we need to send from our master wallet: %d", amountXRPToSend)
 
-		// Pick an internal address to send from
-		var randomNumber int = 0
-		// todo - should pick a real random wallet
+		// Pick a random internal address to send from
+		rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
+		rand.Intn(len(rippleapi.RippleWallets))
+		var randomNumber int = rand.Intn(len(rippleapi.RippleWallets))
 
-		// todo - Update activation with XRP to send
+		// todo - Activation should specify a value
 
 		// Send the xrp - note that XRP must be specified in satoshis so we multiply by 100
-		_, errorCode, err := delegatedSend(c, accessKey, wallets[randomNumber].Passphrase, wallets[randomNumber].Address, addressToActivate, "XRP", "", amountXRPToSend*100, activationId, "")
+		_, errorCode, err := delegatedSend(c, accessKey, rippleapi.RippleWallets[randomNumber].Passphrase, rippleapi.RippleWallets[randomNumber].Address, addressToActivate, "XRP", "", amountXRPToSend*100, activationId, "")
 		if err != nil {
 			log.FluentfContext(consts.LOGERROR, c, "Error in delegatedSend(): %s", err.Error())
 			// Don't update the payment because delegatedSend() already does this
