@@ -476,7 +476,7 @@ func GetPaymentByPaymentId(c context.Context, accessKey string, paymentId string
 	var lastUpdatedBlockId []byte
 	var payment enulib.SimplePayment
 	var paymentTag []byte
-	var errorCode int64
+	var errorCode sql.NullInt64
 	var errorMessage []byte
 
 	if err := row.Scan(&rowId, &blockId, &blockchainId, &sourceTxId, &sourceAddress, &destinationAddress, &asset, &issuer, &amount, &status, &lastUpdatedBlockId, &txFee, &broadcastTxId, &paymentTag, &errorCode, &errorMessage); err == sql.ErrNoRows {
@@ -491,7 +491,7 @@ func GetPaymentByPaymentId(c context.Context, accessKey string, paymentId string
 		log.FluentfContext(consts.LOGERROR, c, "Failed to Scan. Reason: %s", err.Error())
 	}
 
-	payment = enulib.SimplePayment{BlockchainId: string(blockchainId), SourceAddress: string(sourceAddress), DestinationAddress: string(destinationAddress), Asset: string(asset), Amount: amount, PaymentId: string(sourceTxId), Status: string(status), BroadcastTxId: string(broadcastTxId), TxFee: txFee, ErrorCode: errorCode, ErrorMessage: string(errorMessage)}
+	payment = enulib.SimplePayment{BlockchainId: string(blockchainId), SourceAddress: string(sourceAddress), DestinationAddress: string(destinationAddress), Asset: string(asset), Amount: amount, PaymentId: string(sourceTxId), Status: string(status), BroadcastTxId: string(broadcastTxId), TxFee: txFee, ErrorCode: errorCode.Int64, ErrorMessage: string(errorMessage)}
 
 	return payment
 }
