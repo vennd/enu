@@ -173,7 +173,7 @@ func delegatedSend(c context.Context, accessKey string, passphrase string, sourc
 		a, err := rippleapi.Uint64ToAmount(quantity)
 		if err != nil {
 			log.FluentfContext(consts.LOGERROR, c, "Error in Uint64ToAmount(): %s", err.Error())
-			database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, consts.GenericErrors.GeneralError.Code, consts.GenericErrors.GeneralError.Description)
+			database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, "", consts.GenericErrors.GeneralError.Code, consts.GenericErrors.GeneralError.Description)
 
 			return "", consts.GenericErrors.GeneralError.Code, errors.New(consts.GenericErrors.GeneralError.Description)
 		}
@@ -184,7 +184,7 @@ func delegatedSend(c context.Context, accessKey string, passphrase string, sourc
 	currency, err := rippleapi.ToCurrency(asset)
 	if err != nil {
 		log.FluentfContext(consts.LOGERROR, c, "Error in rippleapi.ToCurrency(): %s", err.Error())
-		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, consts.GenericErrors.GeneralError.Code, consts.GenericErrors.GeneralError.Description)
+		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, "", consts.GenericErrors.GeneralError.Code, consts.GenericErrors.GeneralError.Description)
 
 		return "", consts.GenericErrors.GeneralError.Code, errors.New(consts.GenericErrors.GeneralError.Description)
 	}
@@ -194,7 +194,7 @@ func delegatedSend(c context.Context, accessKey string, passphrase string, sourc
 	secret, err := ripplecrypto.ToSecret(seed.ToHex())
 	if err != nil {
 		log.FluentfContext(consts.LOGERROR, c, "Error in ripplecrypto.ToSecret(): %s", err.Error())
-		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, consts.GenericErrors.InvalidPassphrase.Code, consts.GenericErrors.InvalidPassphrase.Description)
+		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, "", consts.GenericErrors.InvalidPassphrase.Code, consts.GenericErrors.InvalidPassphrase.Description)
 
 		return "", consts.GenericErrors.InvalidPassphrase.Code, errors.New(consts.GenericErrors.InvalidPassphrase.Description)
 	}
@@ -203,7 +203,7 @@ func delegatedSend(c context.Context, accessKey string, passphrase string, sourc
 	signedTx, errCode, err := rippleapi.CreatePayment(c, sourceAddress, destinationAddress, amount, currency, issuer, secret)
 	if err != nil {
 		log.FluentfContext(consts.LOGERROR, c, "Error in rippleapi.CreatePayment(): %s", err.Error())
-		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, errCode, err.Error())
+		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, "", errCode, err.Error())
 
 		return "", errCode, err
 	}
@@ -212,7 +212,7 @@ func delegatedSend(c context.Context, accessKey string, passphrase string, sourc
 	txHash, errCode, err := rippleapi.Submit(c, signedTx)
 	if err != nil {
 		log.FluentfContext(consts.LOGERROR, c, "Error in Submit(): %s", err.Error())
-		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, consts.RippleErrors.SubmitError.Code, consts.RippleErrors.SubmitError.Description)
+		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, txHash, consts.RippleErrors.SubmitError.Code, consts.RippleErrors.SubmitError.Description)
 
 		return "", errCode, err
 	}

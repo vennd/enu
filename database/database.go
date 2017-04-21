@@ -634,7 +634,7 @@ func UpdatePaymentStatusByPaymentId(c context.Context, accessKey string, payment
 	return nil
 }
 
-func UpdatePaymentWithErrorByPaymentId(c context.Context, accessKey string, paymentId string, errorCode int64, errorDescription string) error {
+func UpdatePaymentWithErrorByPaymentId(c context.Context, accessKey string, paymentId string, txId string, errorCode int64, errorDescription string) error {
 	if isInit == false {
 		Init()
 	}
@@ -647,13 +647,13 @@ func UpdatePaymentWithErrorByPaymentId(c context.Context, accessKey string, paym
 		return errors.New(errorString)
 	}
 
-	stmt, err := Db.Prepare("update payments set status='error', errorCode=?, errorDescription=? where accessKey=? and sourceTxId = ?")
+	stmt, err := Db.Prepare("update payments set status='error', broadcastTxId=?, errorCode=?, errorDescription=? where accessKey=? and sourceTxId = ?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err2 := stmt.Exec(errorCode, errorDescription, accessKey, paymentId)
+	_, err2 := stmt.Exec(txId, errorCode, errorDescription, accessKey, paymentId)
 	if err2 != nil {
 		return err2
 	}

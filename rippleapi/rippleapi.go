@@ -479,6 +479,7 @@ func Submit(c context.Context, txHexString string) (string, int64, error) {
 		if r["engine_result"] != nil && r["engine_result"] == "tesSUCCESS" {
 			result = r["tx_json"].(map[string]interface{})["hash"].(string)
 		} else {
+			result = r["tx_json"].(map[string]interface{})["hash"].(string) // attempt to return the tx_hash such that we can query on later
 
 			var engineResult string
 			var engineResultCode int64
@@ -501,16 +502,16 @@ func Submit(c context.Context, txHexString string) (string, int64, error) {
 			// tec* codes indicates the fee was lost
 			if strings.HasPrefix(engineResult, "tec") {
 				if engineResult == "tecPATH_DRY" {
-					return "", consts.RippleErrors.InvalidCurrencyOrNoTrustline.Code, errors.New(consts.RippleErrors.InvalidCurrencyOrNoTrustline.Description)
+					return result, consts.RippleErrors.InvalidCurrencyOrNoTrustline.Code, errors.New(consts.RippleErrors.InvalidCurrencyOrNoTrustline.Description)
 				}
 
 				if engineResult == "tecUNFUNDED_PAYMENT" {
-					return "", consts.RippleErrors.InsufficientXRP.Code, errors.New(consts.RippleErrors.InsufficientXRP.Description)
+					return result, consts.RippleErrors.InsufficientXRP.Code, errors.New(consts.RippleErrors.InsufficientXRP.Description)
 				}
-				return "", consts.RippleErrors.SubmitErrorFeeLost.Code, errors.New(consts.RippleErrors.SubmitErrorFeeLost.Description)
+				return result, consts.RippleErrors.SubmitErrorFeeLost.Code, errors.New(consts.RippleErrors.SubmitErrorFeeLost.Description)
 			}
 
-			return "", consts.RippleErrors.SubmitError.Code, errors.New(consts.RippleErrors.SubmitError.Description)
+			return result, consts.RippleErrors.SubmitError.Code, errors.New(consts.RippleErrors.SubmitError.Description)
 		}
 	}
 

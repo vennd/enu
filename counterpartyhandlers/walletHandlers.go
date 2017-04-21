@@ -113,7 +113,7 @@ func delegatedSend(c context.Context, accessKey string, passphrase string, sourc
 	sourceAddressPubKey, err := counterpartycrypto.GetPublicKey(passphrase, sourceAddress)
 	if err != nil {
 		log.FluentfContext(consts.LOGERROR, c, "Err in GetPublicKey(): %s\n", err.Error())
-		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, consts.CounterpartyErrors.InvalidPassphrase.Code, consts.CounterpartyErrors.InvalidPassphrase.Description)
+		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, "", consts.CounterpartyErrors.InvalidPassphrase.Code, consts.CounterpartyErrors.InvalidPassphrase.Description)
 		return "", consts.CounterpartyErrors.SigningError.Code, errors.New(consts.CounterpartyErrors.SigningError.Description)
 	}
 
@@ -143,7 +143,7 @@ func delegatedSend(c context.Context, accessKey string, passphrase string, sourc
 	createResult, errorCode, err := counterpartyapi.CreateSend(c, sourceAddress, destinationAddress, asset, quantity, sourceAddressPubKey)
 	if err != nil {
 		log.FluentfContext(consts.LOGERROR, c, "Err in CreateSend(): %s", err.Error())
-		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, errorCode, err.Error())
+		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, "", errorCode, err.Error())
 		return "", errorCode, err
 	}
 
@@ -153,7 +153,7 @@ func delegatedSend(c context.Context, accessKey string, passphrase string, sourc
 	signed, err := counterpartyapi.SignRawTransaction(c, passphrase, createResult)
 	if err != nil {
 		log.FluentfContext(consts.LOGERROR, c, "Err in SignRawTransaction(): %s\n", err.Error())
-		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, consts.CounterpartyErrors.SigningError.Code, consts.CounterpartyErrors.SigningError.Description)
+		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, "", consts.CounterpartyErrors.SigningError.Code, consts.CounterpartyErrors.SigningError.Description)
 		return "", consts.CounterpartyErrors.SigningError.Code, errors.New(consts.CounterpartyErrors.SigningError.Description)
 	}
 
@@ -166,7 +166,7 @@ func delegatedSend(c context.Context, accessKey string, passphrase string, sourc
 	txIdSignedTx, err := bitcoinapi.SendRawTransaction(c, signed)
 	if err != nil {
 		log.FluentfContext(consts.LOGERROR, c, err.Error())
-		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, consts.CounterpartyErrors.BroadcastError.Code, consts.CounterpartyErrors.BroadcastError.Description)
+		database.UpdatePaymentWithErrorByPaymentId(c, accessKey, paymentId, txIdSignedTx, consts.CounterpartyErrors.BroadcastError.Code, consts.CounterpartyErrors.BroadcastError.Description)
 		return "", consts.CounterpartyErrors.BroadcastError.Code, errors.New(consts.CounterpartyErrors.BroadcastError.Description)
 	}
 
@@ -332,14 +332,14 @@ func delegatedActivateAddress(c context.Context, addressToActivate string, amoun
 		quantity, asset, err := counterpartyapi.CalculateFeeAmount(c, amount)
 		if err != nil {
 			log.FluentfContext(consts.LOGERROR, c, "Could not calculate fee: %s", err.Error())
-			database.UpdatePaymentWithErrorByPaymentId(c, accessKey, activationId, consts.CounterpartyErrors.MiscError.Code, consts.CounterpartyErrors.MiscError.Description)
+			database.UpdatePaymentWithErrorByPaymentId(c, accessKey, activationId, "", consts.CounterpartyErrors.MiscError.Code, consts.CounterpartyErrors.MiscError.Description)
 			return "", consts.CounterpartyErrors.MiscError.Code, errors.New(consts.CounterpartyErrors.MiscError.Description)
 		}
 
 		txId, _, err = delegatedSend(c, accessKey, wallets[randomNumber].Passphrase, wallets[randomNumber].Address, addressToActivate, asset, quantity, activationId, "")
 		if err != nil {
 			log.FluentfContext(consts.LOGERROR, c, "Error in DelegatedSend: %s", err.Error())
-			database.UpdatePaymentWithErrorByPaymentId(c, accessKey, activationId, consts.CounterpartyErrors.MiscError.Code, consts.CounterpartyErrors.MiscError.Description)
+			database.UpdatePaymentWithErrorByPaymentId(c, accessKey, activationId, "", consts.CounterpartyErrors.MiscError.Code, consts.CounterpartyErrors.MiscError.Description)
 
 			complete = false
 		} else {
