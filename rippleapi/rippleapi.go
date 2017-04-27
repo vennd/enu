@@ -68,7 +68,8 @@ type PaymentAssetTx struct {
 	TxnSignature       string `json:",omitempty"`
 
 	// Payment specific fields
-	Amount         Amount // Note only the Amount field is different between sending XRP or a custom currency
+	Amount         Amount // Note the Amount field is different between sending XRP or a custom currency
+	SendMax        Amount
 	Destination    string
 	DestinationTag uint32
 	InvoiceID      string
@@ -536,7 +537,7 @@ func Submit(c context.Context, txHexString string) (string, int64, error) {
 				// Since we don't know what maxLedgerSequence was, use the current sequence + offset
 				currentLedger, errorCode, err := GetLatestValidatedLedger(c)
 				if err != nil {
-					log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve current ledger status. Error: " + err.Error())
+					log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve current ledger status. Error: "+err.Error())
 					return "", errorCode, err
 				}
 
@@ -547,7 +548,7 @@ func Submit(c context.Context, txHexString string) (string, int64, error) {
 					// get tx status
 					tx, errorCode, err := GetTx(c, result)
 					if err != nil {
-						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve tx status. Error: " + err.Error())
+						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve tx status. Error: "+err.Error())
 						return "", errorCode, err
 					}
 
@@ -559,24 +560,24 @@ func Submit(c context.Context, txHexString string) (string, int64, error) {
 					// check if we've passed the cut off ledger sequence we've specified
 					ledger, errorCode, err := GetLatestValidatedLedger(c)
 					if err != nil {
-						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve ledger status. Error: " + err.Error())
+						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve ledger status. Error: "+err.Error())
 						return "", errorCode, err
 					}
 
 					newLedgerIndex, err := strconv.ParseUint(ledger.LedgerIndex, 10, 64)
 					if err != nil {
-						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve new ledger status. Invalid sequence number. Error: " + err.Error())
+						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve new ledger status. Invalid sequence number. Error: "+err.Error())
 						return "", errorCode, err
 					}
 
 					currentLedgerIndex, err := strconv.ParseUint(currentLedger.LedgerIndex, 10, 64)
 					if err != nil {
-						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve ledger status. Invalid sequence number. Error: " + err.Error())
+						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve ledger status. Invalid sequence number. Error: "+err.Error())
 						return "", errorCode, err
 					}
 
 					// Passed cut off
-					if newLedgerIndex > currentLedgerIndex + uint64(rippleLastLedgerSequenceOffset) {
+					if newLedgerIndex > currentLedgerIndex+uint64(rippleLastLedgerSequenceOffset) {
 						break
 					}
 				}
@@ -584,7 +585,7 @@ func Submit(c context.Context, txHexString string) (string, int64, error) {
 				// Check if the tx was accepted
 				tx, errorCode, err := GetTx(c, result)
 				if err != nil {
-					log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve tx status. Error: " + err.Error())
+					log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve tx status. Error: "+err.Error())
 					return "", errorCode, err
 				}
 
@@ -1019,6 +1020,12 @@ func CreatePayment(c context.Context, account string, destination string, quanti
 			Account:         account,
 			Destination:     destination,
 			Amount: Amount{
+				Value:    quantity,
+				Currency: currency,
+				Issuer:   issuer,
+			},
+			// When working with the Enu API, we don't allow any slippage
+			SendMax: Amount{
 				Value:    quantity,
 				Currency: currency,
 				Issuer:   issuer,
