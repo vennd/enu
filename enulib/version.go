@@ -2,10 +2,10 @@ package enulib
 
 // Must follow http://semver.org/
 const (
-	VersionMajor      = 2
+	VersionMajor      = 3
 	VersionMinor      = 0
 	VersionPatch      = 0
 	VersionPrerelease = "beta"
 
-	VersionTag = "letitgo"
+	VersionTag = "backstreetsback"
 )

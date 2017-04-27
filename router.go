@@ -46,7 +46,9 @@ func NewRouter() *mux.Router {
 	router.Handle("/counterparty/wallet/activate/address/{address}", ctxHandler(ActivateAddress)).Methods("POST")
 	router.Handle("/counterparty/payment/address/{address}", ctxHandler(GetPaymentsByAddress)).Methods("GET")
 
-	router.Handle("/blocks", ctxHandler(GetBlocks)).Methods("GET")
+	// Direct access to Ripple resources
+	router.Handle("/ripple/ledger/status", ctxHandler(GetRippleLedgerStatus)).Methods("GET")
 
+	router.Handle("/blocks", ctxHandler(GetBlocks)).Methods("GET")
 	return router
 }

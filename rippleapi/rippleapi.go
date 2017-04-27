@@ -46,6 +46,12 @@ const TfClearNoRipple = 262144
 const TfSetFreeze = 1048576
 const TfClearFreeze = 2097152
 
+type Amount struct {
+	Value    string `json:"value,omitempty"`
+	Currency string `json:"currency,omitempty"`
+	Issuer   string `json:"issuer,omitempty"`
+}
+
 // Structure for payment transactions for custom currencies
 type PaymentAssetTx struct {
 	// Common fields
@@ -53,7 +59,7 @@ type PaymentAssetTx struct {
 	AccountTxnID       string `json:",omitempty"`
 	Fee                string `json:",omitempty"`
 	Flags              uint32 `json:",omitempty"`
-	LastLedgerSequence uint32 `json:",omitempty"`
+	LastLedgerSequence uint64 `json:",omitempty"`
 	Memos              []Memo
 	Sequence           uint32 `json:",omitempty"`
 	SigningPubKey      string `json:",omitempty"`
@@ -62,7 +68,7 @@ type PaymentAssetTx struct {
 	TxnSignature       string `json:",omitempty"`
 
 	// Payment specific fields
-	Amount         Amount
+	Amount         Amount // Note only the Amount field is different between sending XRP or a custom currency
 	Destination    string
 	DestinationTag uint32
 	InvoiceID      string
@@ -78,7 +84,7 @@ type PaymentXrpTx struct {
 	AccountTxnID       string `json:",omitempty"`
 	Fee                string `json:",omitempty"`
 	Flags              uint32 `json:",omitempty"`
-	LastLedgerSequence uint32 `json:",omitempty"`
+	LastLedgerSequence uint64 `json:",omitempty"`
 	Memos              []Memo
 	Sequence           uint32 `json:",omitempty"`
 	SigningPubKey      string `json:",omitempty"`
@@ -119,43 +125,23 @@ type Balance struct {
 	Counterparty string `json:"counterparty"`
 }
 
-type Amount struct {
-	Value    string `json:"value,omitempty"`
-	Currency string `json:"currency,omitempty"`
-	Issuer   string `json:"issuer,omitempty"`
-}
-
-type Payment struct {
-	Source_account      string `json:"source_account"`
-	Source_tag          string `json:"source_tag"`
-	Source_amount       Amount `json:"source_amount"`
-	Source_slippage     string `json:"source_slippage"`
-	Destination_account string `json:"destination_account"`
-	Destination_tag     string `json:"destination_tag"`
-	Destination_amount  Amount `json:"destination_amount"`
-	Invoice_id          string `json:"invoice_id"`
-	Paths               string `json:"paths"`
-	Partial_payment     bool   `json:"partial_payment"`
-	No_direct_ripple    bool   `json:"no_direct_ripple"`
-}
-
-type AccountlinesResult struct {
-	Account              string        `json:"account"`
-	Ledger_current_index int64         `json:"ledger_current_index"`
-	GetAccountLines      []Accountline `json:"lines"`
-	Status               string        `json:"status"`
-	Validated            bool          `json:"validated"`
-}
-
-type Accountline struct {
-	Account     string `json:"account"`
-	Balance     string `json:"balance"`
-	Currency    string `json:"currency"`
-	Limit       string `json:"limit"`
-	Limit_peer  string `json:"limit_peer"`
-	Quality_in  int64  `json:"quality_in"`
-	Quality_out int64  `json:"quality_out"`
-}
+//type AccountlinesResult struct {
+//	Account              string        `json:"account"`
+//	Ledger_current_index int64         `json:"ledger_current_index"`
+//	GetAccountLines      []Accountline `json:"lines"`
+//	Status               string        `json:"status"`
+//	Validated            bool          `json:"validated"`
+//}
+//
+//type Accountline struct {
+//	Account     string `json:"account"`
+//	Balance     string `json:"balance"`
+//	Currency    string `json:"currency"`
+//	Limit       string `json:"limit"`
+//	Limit_peer  string `json:"limit_peer"`
+//	Quality_in  int64  `json:"quality_in"`
+//	Quality_out int64  `json:"quality_out"`
+//}
 
 type ApiResult struct {
 	resp *http.Response
@@ -168,6 +154,13 @@ type payloadGetServerInfo struct {
 }
 
 type payloadGetServerInfoParams struct{}
+
+type payloadLedger struct {
+	Method string              `json:"method"`
+	Params payloadLedgerParams `json:"params"`
+}
+
+type payloadLedgerParams struct{}
 
 type payloadGetCurrenciesByAccount struct {
 	Method string                   `json:"method"`
@@ -292,6 +285,41 @@ type AccountInfo struct {
 	Index           string `json:"index,omitempty"`
 }
 
+type LedgerValue struct {
+	Accepted bool `json:"accepted,omitempty"`
+	//Accepted2	string
+	AccountHash         string `json:"account_hash,omitempty"`
+	CloseFlags          uint32 `json:"close_flags,omitempty"`
+	CloseTime           uint32 `json:"close_time,omitempty"`
+	CloseTimeHuman      string `json:"close_time_human,omitempty"`
+	CloseTimeResolution uint32 `json:"close_time_resolution,omitempty"`
+	Closed              bool   `json:"closed,omitempty"`
+	LedgerHash          string `json:"ledger_hash,omitempty"`
+	LedgerIndex         string `json:"ledger_index,omitempty"`
+	ParentCloseTime     uint32 `json:"parent_close_time,omitempty"`
+	ParentHash          string `json:"parent_hash,omitempty"`
+	SeqNum              string `json:"seqNum,omitempty"`
+	TotalCoins1         string `json:"totalCoins,omitempty"`
+	TotalCoins2         string `json:"total_coins,omitempty"`
+	TransactionHash     string `json:"transaction_hash,omitempty"`
+}
+
+type Ledger struct {
+	Ledger LedgerValue `json:"ledger,omitempty"`
+}
+
+type LedgerResult struct {
+	Closed Ledger `json:"closed,omitempty"`
+	Open   Ledger `json:"open,omitempty"`
+}
+
+type Transaction struct {
+	Account     string `json:",omitempty"`
+	Hash        string `json:"hash,omitempty"`
+	LedgerIndex uint64 `json:"ledger_index,omitempty"`
+	Validated   bool   `json:"validated,omitempty"`
+}
+
 // Used to store the internal wallets
 type MasterWallet struct {
 	Address    string `json:"address"`
@@ -302,6 +330,7 @@ type MasterWallet struct {
 var isInit bool = false // set to true only after the init sequence is complete
 var rippleHost string
 var RippleWallets []MasterWallet
+var rippleLastLedgerSequenceOffset uint
 
 func Init() {
 	var configFilePath string
@@ -360,6 +389,7 @@ func InitWithConfigPath(configFilePath string) {
 
 	// Ripple API parameters
 	rippleHost = m["rippleHost"].(string) // End point for JSON RPC server
+	rippleLastLedgerSequenceOffset = uint(m["rippleLastLedgerSequenceOffset"].(float64))
 
 	for _, w := range m["rippleWallets"].([]interface{}) {
 		var wallet MasterWallet
@@ -497,6 +527,79 @@ func Submit(c context.Context, txHexString string) (string, int64, error) {
 				engineResultMessage = r["engine_result_message"].(string)
 			}
 
+			// terQUEUED indicates we can wait until LastLedgerSequence before the submitted transaction expires
+			if engineResult == "terQUEUED" {
+				// a ripple ledger is produced every few seconds, retry until rippleLastLedgerSequenceOffset is reached
+				// try at most 10 times
+
+				// Note the current ledger sequence
+				// Since we don't know what maxLedgerSequence was, use the current sequence + offset
+				currentLedger, errorCode, err := GetLatestValidatedLedger(c)
+				if err != nil {
+					log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve current ledger status. Error: " + err.Error())
+					return "", errorCode, err
+				}
+
+				interval := time.Duration(1) * time.Second
+				for i := 1; i <= 10; i++ {
+					time.Sleep(interval) // throttle a second
+
+					// get tx status
+					tx, errorCode, err := GetTx(c, result)
+					if err != nil {
+						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve tx status. Error: " + err.Error())
+						return "", errorCode, err
+					}
+
+					// If the tx was accepted in the Ripple ledger
+					if tx.Validated == true {
+						break
+					}
+
+					// check if we've passed the cut off ledger sequence we've specified
+					ledger, errorCode, err := GetLatestValidatedLedger(c)
+					if err != nil {
+						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve ledger status. Error: " + err.Error())
+						return "", errorCode, err
+					}
+
+					newLedgerIndex, err := strconv.ParseUint(ledger.LedgerIndex, 10, 64)
+					if err != nil {
+						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve new ledger status. Invalid sequence number. Error: " + err.Error())
+						return "", errorCode, err
+					}
+
+					currentLedgerIndex, err := strconv.ParseUint(currentLedger.LedgerIndex, 10, 64)
+					if err != nil {
+						log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve ledger status. Invalid sequence number. Error: " + err.Error())
+						return "", errorCode, err
+					}
+
+					// Passed cut off
+					if newLedgerIndex > currentLedgerIndex + uint64(rippleLastLedgerSequenceOffset) {
+						break
+					}
+				}
+
+				// Check if the tx was accepted
+				tx, errorCode, err := GetTx(c, result)
+				if err != nil {
+					log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve tx status. Error: " + err.Error())
+					return "", errorCode, err
+				}
+
+				if tx.Validated != true {
+					log.FluentfContext(consts.LOGERROR, c, "Transaction was not accepted due to esclation of transaction fees!")
+					return "", consts.RippleErrors.QueuedNotAccepted.Code, errors.New(consts.RippleErrors.QueuedNotAccepted.Description)
+				}
+
+				// ------ Break out and return success
+				if tx.Validated == true {
+					log.FluentfContext(consts.LOGINFO, c, "Warning - transaction was queued due to escalated fees but subsequently accepted")
+					return tx.Hash, 0, nil
+				}
+			}
+
 			log.FluentfContext(consts.LOGERROR, c, "Error from submit engine_result: %s, engine_result_code: %d, engine_result_message: %s", engineResult, engineResultCode, engineResultMessage)
 
 			// tec* codes indicates the fee was lost
@@ -514,6 +617,15 @@ func Submit(c context.Context, txHexString string) (string, int64, error) {
 			return result, consts.RippleErrors.SubmitError.Code, errors.New(consts.RippleErrors.SubmitError.Description)
 		}
 	}
+
+	// get tx status
+	//tx, errorCode, err := GetTx(c, result)
+	//if err != nil {
+	//	log.FluentfContext(consts.LOGERROR, c, "Unable to retrieve tx status. Error: " + err.Error())
+	//	return "", errorCode, err
+	//}
+	//
+	//log.FluentfContext(consts.LOGINFO, c, "Tx status: %t", tx.Validated)
 
 	return result, 0, nil
 }
@@ -716,6 +828,44 @@ func ServerInfo(c context.Context) ([]byte, int64, error) {
 	return result, errorCode, nil
 }
 
+func GetLatestValidatedLedger(c context.Context) (LedgerValue, int64, error) {
+	var payload payloadLedger
+	var result LedgerValue
+
+	if isInit == false {
+		Init()
+	}
+
+	payload.Method = "ledger"
+
+	payloadJsonBytes, err := json.Marshal(payload)
+	if err != nil {
+		log.FluentfContext(consts.LOGERROR, c, "Error in Marshal(): %s", err.Error())
+		return result, consts.CounterpartyErrors.MiscError.Code, errors.New(consts.CounterpartyErrors.MiscError.Description)
+	}
+
+	responseData, errorCode, err := postRPCAPI(c, payloadJsonBytes)
+	if err != nil {
+		return result, errorCode, err
+	}
+
+	if responseData["result"] != nil {
+		log.Printf("%#v", responseData["result"])
+	}
+
+	// map reply...
+	r := responseData["result"].(map[string]interface{})
+	rclosed := r["closed"].(map[string]interface{})
+	rclosedledger := rclosed["ledger"].(map[string]interface{})
+	result.Closed = rclosedledger["closed"].(bool)
+	result.Accepted = rclosedledger["accepted"].(bool)
+	//result.Accepted2 = strconv.FormatBool(rclosedledger["closed"].(bool))
+	result.LedgerHash = rclosedledger["ledger_hash"].(string)
+	result.LedgerIndex = rclosedledger["ledger_index"].(string)
+
+	return result, errorCode, nil
+}
+
 func GetCurrenciesByAccount(c context.Context, account string) (CurrenciesByAccount, int64, error) {
 	var payload payloadGetCurrenciesByAccount
 	var result CurrenciesByAccount
@@ -774,6 +924,53 @@ func GetCurrenciesByAccount(c context.Context, account string) (CurrenciesByAcco
 	return result, 0, nil
 }
 
+// GetTx gets the status of a TX in the RCL. Note this doesn't seem to return anything useful if the TX was just submitted but not yet accepted
+func GetTx(c context.Context, txhash string) (Transaction, int64, error) {
+	var result Transaction
+
+	var payload = make(map[string]interface{})
+	var params = make(map[string]interface{})
+	var paramsArray []map[string]interface{}
+	var responseData map[string]interface{}
+
+	if isInit == false {
+		Init()
+	}
+
+	// Build parameters
+	params["transaction"] = txhash
+	params["binary"] = false
+	paramsArray = append(paramsArray, params)
+
+	// Build payload
+	payload["method"] = "tx"
+	payload["params"] = paramsArray
+
+	payloadJsonBytes, err := json.Marshal(payload)
+	if err != nil {
+		log.FluentfContext(consts.LOGERROR, c, "Error in Marshal(): %s", err.Error())
+		return result, consts.CounterpartyErrors.MiscError.Code, errors.New(consts.CounterpartyErrors.MiscError.Description)
+	}
+
+	responseData, errorCode, err := postRPCAPI(c, payloadJsonBytes)
+	if err != nil {
+		return result, errorCode, err
+	}
+
+	if responseData["result"] != nil {
+		log.Printf("%#v", responseData["result"])
+	}
+
+	// map reply...
+	r := responseData["result"].(map[string]interface{})
+	result.Account = r["Account"].(string)
+	result.Hash = r["hash"].(string)
+	result.LedgerIndex = uint64(r["ledger_index"].(float64))
+	result.Validated = r["validated"].(bool)
+
+	return result, errorCode, nil
+}
+
 // Creates and signs the payment for the custom currency that is specified.
 // If XRP is specified, then the amount MUST be specifed in droplets
 // Returns the tx string if successful
@@ -786,14 +983,33 @@ func CreatePayment(c context.Context, account string, destination string, quanti
 	var errCode int64
 	var err error
 
+	// Set LastLedgerSequence
+	latestLedger, errCode, err := GetLatestValidatedLedger(c)
+	if err != nil {
+		return "", errCode, err
+	}
+
+	if latestLedger.Accepted != true || latestLedger.Closed != true {
+		log.Fluentf(consts.LOGERROR, "Unable to retrieve latest closed and accepted ledger. Got: %+v", latestLedger)
+		return "", consts.RippleErrors.UnableToGetLatestLedger.Code, errors.New(consts.RippleErrors.UnableToGetLatestLedger.Description)
+	}
+
+	LatestLedgerSequence, err := strconv.ParseUint(latestLedger.LedgerIndex, 10, 64)
+	if err != nil {
+		return "", errCode, err
+	}
+
+	LastLedgerSequence := LatestLedgerSequence + uint64(rippleLastLedgerSequenceOffset)
+
 	if strings.ToUpper(currency) == "XRP" {
 		tx := PaymentXrpTx{
-			TransactionType: "Payment",
-			Account:         account,
-			Destination:     destination,
-			Amount:          quantity,
-			Flags:           2147483648, // require canonical signature
-			Fee:             DefaultFee,
+			TransactionType:    "Payment",
+			Account:            account,
+			Destination:        destination,
+			Amount:             quantity,
+			Flags:              2147483648, // require canonical signature
+			Fee:                DefaultFee,
+			LastLedgerSequence: LastLedgerSequence,
 		}
 
 		signedTx, errCode, err = Sign(c, tx, secret)
@@ -807,8 +1023,9 @@ func CreatePayment(c context.Context, account string, destination string, quanti
 				Currency: currency,
 				Issuer:   issuer,
 			},
-			Flags: 2147483648, // require canonical signature
-			Fee:   DefaultFee,
+			Flags:              2147483648, // require canonical signature
+			Fee:                DefaultFee,
+			LastLedgerSequence: LastLedgerSequence,
 		}
 
 		signedTx, errCode, err = Sign(c, tx, secret)

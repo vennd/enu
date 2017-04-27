@@ -70,6 +70,9 @@ var blockchainFunctions = map[string]blockchainFunction{
 		"asset":    ripplehandlers.AssetCreate,
 		"getasset": generalhandlers.GetAsset,
 
+		// Ripple specific
+		"getrippleledgerstatus": ripplehandlers.GetRippleLedgerStatus,
+
 		// Unsupported
 		"address":  ripplehandlers.Unhandled,
 		"dividend": ripplehandlers.Unhandled,

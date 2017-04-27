@@ -50,3 +50,10 @@ func GetAsset(c context.Context, w http.ResponseWriter, r *http.Request) *enulib
 
 	return handle(c, w, r)
 }
+
+func GetRippleLedgerStatus(c context.Context, w http.ResponseWriter, r *http.Request) *enulib.AppError {
+	// Add to the context the RequestType
+	c = context.WithValue(c, consts.RequestTypeKey, "getrippleledgerstatus") //new
+
+	return handle(c, w, r)
+}

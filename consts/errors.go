@@ -99,6 +99,8 @@ type RippleStruct struct {
 	DistributionPassphraseMissing ErrCodes
 	DistributionInsufficientFunds ErrCodes
 	InsufficientXRP               ErrCodes
+	UnableToGetLatestLedger       ErrCodes
+	QueuedNotAccepted             ErrCodes
 }
 
 var RippleErrors = RippleStruct{
@@ -116,4 +118,6 @@ var RippleErrors = RippleStruct{
 	DistributionPassphraseMissing: ErrCodes{2011, "If a distribution address is specified the passphrase for the distribution address must be given."},
 	DistributionInsufficientFunds: ErrCodes{2012, "The specified distribution address does not contain sufficient funds. Please activate the address and try again."},
 	InsufficientXRP:               ErrCodes{2013, "There was insufficient XRP in the address to perform the payment. Please activate the address and try again."},
+	UnableToGetLatestLedger:       ErrCodes{2014, "Unable to retrieve the latest ledger that Ripple has validated. Internal server error..."},
+	QueuedNotAccepted:             ErrCodes{2015, "The transaction was queued due to esclation of transaction fees. However, it was not accepted after the maximum ledger sequence."},
 }
